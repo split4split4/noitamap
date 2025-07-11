@@ -111,8 +111,19 @@ export class UnifiedSearchResults extends EventEmitter2 {
       this.targetByElement.set(listItem, result);
 
       if ('type' in result && result.type === 'spell') {
-        // Handle spell results
-        listItem.textContent = result.displayText;
+        // Handle spell results with image
+        const img = document.createElement('img');
+        img.src = `./assets/icons/spells/${result.spell.sprite}`;
+        img.classList.add('pixelated-image');
+        img.alt = result.spell.name;
+        img.onerror = () => {
+          img.src = './assets/icons/spells/missing.png';
+          img.alt = 'Missing';
+        };
+        listItem.appendChild(img);
+        const textDiv = document.createElement('div');
+        textDiv.textContent = result.displayText;
+        listItem.appendChild(textDiv);
       } else if ('overlayType' in result) {
         // Handle map overlay results
         switch (result.overlayType) {
