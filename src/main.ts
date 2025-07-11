@@ -1,7 +1,7 @@
 import { App } from './app';
 import { parseURL, updateURL } from './data_sources/url';
-import { asOverlayKey, showOverlay } from './data_sources/overlays';
-import { UnifiedSearch } from './search/unifiedsearch';
+import { asOverlayKey, initSpellSelector, showOverlay } from './data_sources/overlays';
+import { SearchBox } from './search/searchbox';
 import { asMapName } from './data_sources/tile_data';
 import { addEventListenerForId, assertElementById, debounce } from './util';
 import { createMapLinks, NAV_LINK_IDENTIFIER } from './nav';
@@ -37,22 +37,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     app.home();
   });
 
-  // create unified search
-  const unifiedSearch = UnifiedSearch.create({
+  // create search
+  const searchBox = SearchBox.create({
     currentMap: app.getMap(),
     form: searchForm,
   });
 
   // link to the app
-  unifiedSearch.on('selected', (result: any) => {
-    if (result.type === 'spell') {
-      // Handle spell selection - trigger the spell selector functionality
-      // This would need to be implemented to show spell probabilities
-      console.log('Spell selected:', result.spell);
-    } else {
-      app.goto(result);
-    }
-  });
+  searchBox.on('selected', toi => app.goto(toi));
 
   const debouncedUpdateURL = debounce(100, updateURL);
   app.on('state-change', state => {
@@ -62,9 +54,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentMapLink = document.querySelector(`#navLinksList [data-map-key=${state.map}]`);
     if (!(currentMapLink instanceof HTMLElement)) return;
 
-    // Update the dropdown button text to show the selected map name (without badges)
-    const mapName = currentMapLink.textContent?.trim() || 'Available Maps';
-    mapSelectorButton.textContent = mapName;
+    // Only show the map label (not badges or patch date) in the dropdown button
+    const mapLabel = currentMapLink.childNodes[0]?.textContent?.trim() || 'Available Maps';
+    mapSelectorButton.textContent = mapLabel;
 
     // Remove "active" class from any nav links that still have it
     document.querySelectorAll('#navLinksList .nav-link.active').forEach(el => {
@@ -96,15 +88,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // jQuery isn't in scope, so we can't manually hide the toggle after
-    // the user clicks an item. let the event bubble so Bootstrap can close
-    // the dropdown after a click
-    // ev.stopPropagation();
-
     // load the new map
     app.setMap(mapName);
     // set which map we're searching
-    unifiedSearch.currentMap = mapName;
+    searchBox.currentMap = mapName;
   });
 
   // manage css classes to show / hide overlays
@@ -146,16 +133,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   document.addEventListener('keydown', copyCoordinates, { capture: false });
 
-  // Uncomment and implement annotations if needed
-  // drawingToggleSwitch.addEventListener("change", (event) => {
-  //   if (event.currentTarget.checked && os.areAnnotationsActive() == false) {
-  //     os.initializeAnnotations();
-  //     console.log("checked");
-  //   } else {
-  //     os.shutdownAnnotations();
-  //     console.log("not checked");
-  //   }
-  // });
+  // Restore spell selector
+  initSpellSelector();
 
   // Handle renderer changes
   rendererForm.addEventListener('change', ev => {

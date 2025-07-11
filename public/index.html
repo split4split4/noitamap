@@ -106,6 +106,39 @@
               <!-- contents defined in src/search.ts under SearchBox.create() -->
             </form>
 
+            <form class="input-group-sm m-2 d-flex">
+              <button id="spellChanceInfoButton" class="btn btn-sm btn-outline-light" type="button"
+                aria-label="Spell chance information">&#9432;</button>
+              <div>
+                <blockquote cite="https://noita.wiki.gg/wiki/Wand_and_Spell_Tiers">
+                  <p>
+                    Spells in Noita are organised into tiers which dictate which spells can spawn; each biome selects
+                    one or more tiers of spells and wands to spawn when generating spell shops and
+                    wands. Most spells belong to more than one tier, though it may define a different rarity value for
+                    each tier (for example, a spell may be very common for Tier 1, but exceedingly
+                    rare in Tier 3).
+                  </p>
+                </blockquote>
+                <cite>— <a href="https://noita.wiki.gg/wiki/Wand_and_Spell_Tiers" target="_blank"
+                    rel="noopener">noita.wiki.gg</a></cite>
+                <hr />
+                <div>
+                  <p>Each percentage represents the chance of a spell to appear:</p>
+                  <ul>
+                    <li>on a wand (if wands appear in the area and the spell can be found on wands)</li>
+                    <li>in a spell shop (if spell shops appear in the area)</li>
+                  </ul>
+                </div>
+                <p>The percentages regard a <em>single spell roll</em>, not the chance of a spell to appear in general,
+                  e.g. on a wand with the capacity to hold multiple spells.</p>
+                <p>Some spells can appear on pre-made wands in the Mines. They <em>can</em> be found on such wands
+                  despite being marked as unable to spawn on regular wands.</p>
+              </div>
+              <input type="search" id="spellSelector" class="form-control" placeholder="Search for a spell&hellip;"
+                aria-label="Search spells" />
+              <ul id="spellList" aria-label="Spell search results"></ul>
+            </form>
+
             <a tabindex="0" id="shareButton" class="icon-button btn btn-outline-light btn-sm text-nowrap m-2"
               role="button" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-trigger="focus"
               data-bs-title="Copied to your clipboard!" data-bs-content="Share copied link with others"
