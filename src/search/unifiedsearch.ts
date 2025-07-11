@@ -129,13 +129,58 @@ export class UnifiedSearch extends EventEmitter2 {
     searchInput.placeholder = 'Search maps, spells, locations… e.g. Kolmi, Fireball';
     searchInput.ariaLabel = 'unified search';
 
+    // Create an absolutely-positioned overlay container for search results
+    let searchResultsOverlay = document.getElementById('unifiedSearchResultsOverlay');
+    if (!searchResultsOverlay) {
+      searchResultsOverlay = document.createElement('div');
+      searchResultsOverlay.id = 'unifiedSearchResultsOverlay';
+      searchResultsOverlay.style.position = 'absolute';
+      searchResultsOverlay.style.zIndex = '9999';
+      searchResultsOverlay.style.display = 'none';
+      searchResultsOverlay.style.minWidth = '300px';
+      document.body.appendChild(searchResultsOverlay);
+    }
+    // Type assertion to satisfy linter
+    const overlayDiv = searchResultsOverlay as HTMLDivElement;
+
     const searchResultsUL = document.createElement('ul');
     searchResultsUL.id = 'unifiedSearchResults';
+    overlayDiv.appendChild(searchResultsUL);
+
+    // Insert input into form, but not the results list
     form.innerHTML = '';
     form.appendChild(searchInput);
-    form.appendChild(searchResultsUL);
+
+    // Position overlay below the input
+    function positionOverlay() {
+      const rect = searchInput.getBoundingClientRect();
+      overlayDiv.style.left = `${rect.left + window.scrollX}px`;
+      overlayDiv.style.top = `${rect.bottom + window.scrollY}px`;
+      overlayDiv.style.width = `${rect.width}px`;
+    }
+    searchInput.addEventListener('focus', () => {
+      positionOverlay();
+      overlayDiv.style.display = 'block';
+    });
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => { overlayDiv.style.display = 'none'; }, 200);
+    });
+    window.addEventListener('resize', positionOverlay);
+    window.addEventListener('scroll', positionOverlay, true);
 
     const searchResults = new UnifiedSearchResults(searchResultsUL);
+
+    // Show overlay when results are updated
+    const origSetResults = searchResults.setResults.bind(searchResults);
+    searchResults.setResults = (...args) => {
+      origSetResults(...args);
+      if (args[0].length > 0) {
+        positionOverlay();
+        overlayDiv.style.display = 'block';
+      } else {
+        overlayDiv.style.display = 'none';
+      }
+    };
 
     return new UnifiedSearch({
       currentMap,

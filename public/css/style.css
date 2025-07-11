@@ -363,3 +363,86 @@ body.toggle-hidden div.osOverlayHighlight {
 .icon-label-hover:focus-visible .label-text {
   display: inline;
 }
+
+#unifiedSearchResultsOverlay {
+  position: absolute;
+  z-index: 9999;
+  background: #181a20ee;
+  border-radius: 0.25em;
+  box-shadow: 0 2px 16px #000a;
+  padding: 0;
+  margin: 0;
+  min-width: 300px;
+  max-width: 400px;
+  overflow: visible;
+}
+
+#unifiedSearchResults {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+#unifiedSearchResults .search-result {
+  padding: 0.5em;
+  border-bottom: 1px solid #fff8;
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  user-select: none;
+  background: none;
+}
+
+#unifiedSearchResults .search-result:hover,
+#unifiedSearchResults .search-result:focus {
+  background: #fff2;
+}
+
+#spellModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+}
+
+#spellModalOverlay[style*='display: flex'] {
+  display: flex !important;
+}
+
+#spellModalContent {
+  background: #222933;
+  padding: 2em;
+  border-radius: 0.5em;
+  min-width: 300px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  position: relative;
+  color: #fff;
+  box-shadow: 0 2px 32px #000a;
+}
+
+#closeSpellModal {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+#closeSpellModal:hover {
+  color: #ffc107;
+}
