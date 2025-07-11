@@ -352,14 +352,3 @@ body.toggle-hidden div.osOverlayHighlight {
     visibility: visible;
   }
 }
-
-/* Icon label hover effect for icon-only buttons */
-.icon-label-hover .label-text {
-  display: none;
-}
-
-.icon-label-hover:hover .label-text,
-.icon-label-hover:focus .label-text,
-.icon-label-hover:focus-visible .label-text {
-  display: inline;
-}
