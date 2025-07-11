@@ -1,5 +1,6 @@
 import { getAllMapDefinitions } from './data_sources/map_definitions';
 import { assertElementById, formatDate } from './util';
+import type { MapDefinition } from './data_sources/map_definitions';
 
 export const NAV_LINK_IDENTIFIER = 'nav-link';
 
@@ -53,4 +54,10 @@ export const createMapLinks = (): HTMLUListElement => {
   }
 
   return navLinksUl;
+};
+
+// Utility to get short map name for selection
+export const getShortMapName = (def: MapDefinition) => {
+  if (def.key === 'purgatory') return 'Purtagory';
+  return def.label;
 };

@@ -290,6 +290,10 @@ export const initSpellSelector = () => {
     const spellSprite = document.createElement('img');
     spellSprite.src = `${spritePath}/${spell.sprite}`;
     spellSprite.classList.add('pixelated-image');
+    spellSprite.onerror = () => {
+      spellSprite.src = './assets/icons/spells/missing.png'; // fallback image
+      spellSprite.alt = 'Missing';
+    };
     spellListItem.appendChild(spellSprite);
 
     const infoDiv = document.createElement('div');
