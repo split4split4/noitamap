@@ -1,7 +1,7 @@
 import { App } from './app';
 import { parseURL, updateURL } from './data_sources/url';
-import { asOverlayKey, initSpellSelector, showOverlay } from './data_sources/overlays';
-import { SearchBox } from './search/searchbox';
+import { asOverlayKey, showOverlay } from './data_sources/overlays';
+import { UnifiedSearch } from './search/unifiedsearch';
 import { asMapName } from './data_sources/tile_data';
 import { addEventListenerForId, assertElementById, debounce } from './util';
 import { createMapLinks, NAV_LINK_IDENTIFIER } from './nav';
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const osdRootElement = assertElementById('osContainer', HTMLElement);
   const searchForm = assertElementById('search-form', HTMLFormElement);
   const overlayButtonsElement = assertElementById('overlay-selector', HTMLDivElement);
-  const mapNameElement = assertElementById('currentMapName', HTMLElement);
+  const mapSelectorButton = assertElementById('mapSelectorButton', HTMLButtonElement);
   const tooltipElement = assertElementById('coordinate', HTMLElement);
   const coordinatesText = tooltipElement.innerText;
   const rendererForm = assertElementById('renderer-form', HTMLFormElement);
@@ -37,14 +37,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     app.home();
   });
 
-  // create search
-  const searchBox = SearchBox.create({
+  // create unified search
+  const unifiedSearch = UnifiedSearch.create({
     currentMap: app.getMap(),
     form: searchForm,
   });
 
   // link to the app
-  searchBox.on('selected', toi => app.goto(toi));
+  unifiedSearch.on('selected', (result: any) => {
+    if (result.type === 'spell') {
+      // Handle spell selection - trigger the spell selector functionality
+      // This would need to be implemented to show spell probabilities
+      console.log('Spell selected:', result.spell);
+    } else {
+      app.goto(result);
+    }
+  });
 
   const debouncedUpdateURL = debounce(100, updateURL);
   app.on('state-change', state => {
@@ -54,7 +62,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentMapLink = document.querySelector(`#navLinksList [data-map-key=${state.map}]`);
     if (!(currentMapLink instanceof HTMLElement)) return;
 
-    mapNameElement.innerHTML = currentMapLink.innerHTML;
+    // Update the dropdown button text to show the selected map name (without badges)
+    const mapName = currentMapLink.textContent?.trim() || 'Available Maps';
+    mapSelectorButton.textContent = mapName;
 
     // Remove "active" class from any nav links that still have it
     document.querySelectorAll('#navLinksList .nav-link.active').forEach(el => {
@@ -94,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // load the new map
     app.setMap(mapName);
     // set which map we're searching
-    searchBox.currentMap = mapName;
+    unifiedSearch.currentMap = mapName;
   });
 
   // manage css classes to show / hide overlays
@@ -135,8 +145,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     tooltipElement: assertElementById('coordinate', HTMLElement),
   });
   document.addEventListener('keydown', copyCoordinates, { capture: false });
-
-  initSpellSelector();
 
   // Uncomment and implement annotations if needed
   // drawingToggleSwitch.addEventListener("change", (event) => {
