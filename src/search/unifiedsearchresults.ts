@@ -63,6 +63,11 @@ export class UnifiedSearchResults extends EventEmitter2 {
     ev.stopPropagation();
 
     this.emit('selected', target);
+    // If the result is a spell, emit a custom event for spell overlays
+    if ('type' in target && target.type === 'spell') {
+      const spellSelectedEvent = new CustomEvent('spell-selected', { detail: target });
+      window.dispatchEvent(spellSelectedEvent);
+    }
   }
 
   private blur() {
