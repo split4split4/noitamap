@@ -1,6 +1,6 @@
 import { App } from './app';
 import { parseURL, updateURL } from './data_sources/url';
-import { asOverlayKey, showOverlay } from './data_sources/overlays';
+import { asOverlayKey, showOverlay, selectSpell } from './data_sources/overlays';
 import { UnifiedSearch } from './search/unifiedsearch';
 import { asMapName } from './data_sources/tile_data';
 import { addEventListenerForId, assertElementById, debounce } from './util';
@@ -46,9 +46,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // link to the app
   unifiedSearch.on('selected', (result: any) => {
     if (result.type === 'spell') {
-      // Handle spell selection - trigger the spell selector functionality
-      // This would need to be implemented to show spell probabilities
-      console.log('Spell selected:', result.spell);
+      // Fill the search box with the spell name
+      const input = document.getElementById('unified-search-input') as HTMLInputElement;
+      if (input) input.value = result.spell.name;
+      // Trigger overlays for the selected spell
+      selectSpell(result.spell);
     } else {
       app.goto(result);
     }
