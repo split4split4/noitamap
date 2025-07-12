@@ -365,7 +365,8 @@ export const initSpellSelector = () => {
     selectSpell(selectedSpell);
   });
 
-  const selectSpell = (spell: Spell) => {
+  // Export selectSpell so it can be used elsewhere
+  export const selectSpell = (spell: Spell) => {
     resetBiomeOverlays();
     spellSelector.value = spell.name;
     const spawnTiers = Object.keys(spell.spawnProbabilities).map(Number);
